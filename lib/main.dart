@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:js/js.dart';
+import 'dart:html';
+import 'package:photo_view/photo_view.dart';
+import 'package:structure_flutter/gallery.dart';
 import 'package:structure_flutter/listview.dart';
+import 'package:structure_flutter/secondpage.dart';
 import 'new_secondpage.dart';
 import 'package:structure_flutter/formpage.dart';
-
+import 'notification_service.dart';
 //import 'bottomnav.dart';
 
-void main() {
+NotificationService _notificationService = NotificationService();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+void main(){
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().init();
   runApp(MyApp());
 }
 
@@ -22,37 +31,48 @@ class MyApp extends StatefulWidget{
 class MyAppState extends State<MyApp>{
   int _mainIndex = 0;
 
+  final List<String> entries = <String>['A', 'B', 'C', 'D', 'E', 'F'];
+  final List<int> colorCodes = <int>[600, 300, 100, 600, 300, 100];
+
+  List<Post> posts =  [];
+
+  void getData() async{
+    posts = await fetchPost();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     const appTitle = 'Form Validation Demo';
-    const List<Widget> _widgetOptions = <Widget>[
-      MyApp(),
-      SecondLayoutNew(data: ["Hallo", "Holla"]),
-      MyForm()
-    ];
-
     return MaterialApp(
       title: appTitle,
+      navigatorKey: navigatorKey,
+
       home: Scaffold(
         resizeToAvoidBottomInset : false,
         appBar: AppBar(
           title: const Text(appTitle),
-          backgroundColor: Colors.indigo,
+          backgroundColor: Colors.black45,
         ),
-
-        body: IndexedStack(
+        body:IndexedStack(
           index: _mainIndex,
           children: const [
             MyForm(),
             SecondLayoutNew(data: ["Hallo", "Holla"]),
-            DataList()
+            DataList(),
+            Gallery()
           ],
         ),
-        /*body: SingleChildScrollView(
-          child: const BottomNavigationMenu(),
-        ),*/
+
         bottomNavigationBar: BottomNavigationBar(
+          fixedColor: Colors.black26,
           currentIndex: _mainIndex,
           onTap: (int newindex) {
             setState(() {
@@ -71,6 +91,10 @@ class MyAppState extends State<MyApp>{
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
               label: "Account",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.photo),
+              label: "Gallery",
             ),
           ],
         ),

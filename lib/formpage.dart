@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'secondpage.dart';
+import 'notification_service.dart';
+
+NotificationService _notificationService = NotificationService();
 
 class MyForm extends StatefulWidget{
   const MyForm({super.key});
@@ -82,7 +85,6 @@ class MyFormState extends State<MyForm>{
                   },
                 )
             ),
-
             Padding(
                 padding: const EdgeInsets.fromLTRB(10, 20, 0, 0),
                 child: ElevatedButton(
@@ -94,6 +96,33 @@ class MyFormState extends State<MyForm>{
 
                       formData.add(kirim1);
                       formData.add(kirim2);
+                      if(kirim1 == "" || kirim2 == ""){
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('Alert'),
+                              content: const Text('Isian tidak boleh kosong'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, 'Cancel'),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, 'OK'),
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            )
+                        );
+                      }
+                      else{
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SecondLayout(data: formData)
+                            )
+                        );
+                      }
 
                       /*AlertDialog alert = AlertDialog(
                         title: Text("Coba get data"),
@@ -106,14 +135,17 @@ class MyFormState extends State<MyForm>{
                           }
                       );*/
 
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SecondLayout(data: formData)
-                          )
-                      );
+
                     },
                     child: const Text("Submit"))
+            ),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(10, 20, 0, 0),
+                child: ElevatedButton(
+                    onPressed: () async{
+                     await _notificationService.showNotifications();
+                    },
+                    child: const Text("Notify"))
             )
           ],
         ),

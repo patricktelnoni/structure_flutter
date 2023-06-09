@@ -1,12 +1,13 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<Post>> fetchPost() async{
-  String url = 'https://jsonplaceholder.typicode.com/posts';
-  final response = await http.get(Uri.parse(url));
+  String url      = 'https://jsonplaceholder.typicode.com/posts';
+  final response  = await http.get(Uri.parse(url));
+  //log("Response : $response");
   List<Post> postsData = [];
-  //log('data: $response');
   if (response.statusCode == 200) {
     final list = jsonDecode(response.body);
     for (var json in list) {
@@ -33,11 +34,11 @@ class Post{
   });
 
   static Post fromJson(json)=> Post(
-        userid  : json['userid'],
-        id      : json['id'],
-        title   : json['title'],
-        body    : json['body']
-    );
+      userid  : json['userid'],
+      id      : json['id'],
+      title   : json['title'],
+      body    : json['body']
+  );
 }
 
 class DataList extends StatefulWidget{
@@ -63,9 +64,10 @@ class DataListState extends State<DataList> {
     super.initState();
     getData();
   }
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       padding: const EdgeInsets.all(20.0),
       itemCount: posts.length,
       itemBuilder: (BuildContext context, int index){
@@ -76,20 +78,20 @@ class DataListState extends State<DataList> {
                 style: BorderStyle.solid,
                 width: 2.0,
               ),
-              color: Colors.blueAccent,
+              color: Colors.amber[index % 2 == 0 ? 300:100],
               borderRadius: BorderRadius.circular(5.0),
             ),
-            height: 150,
+            height: 200,
             margin: EdgeInsets.all(2),
             //color: Colors.amber[600],
             child: ListTile(
               title:Text('${posts[index].title}'),
               subtitle: Text('${posts[index].body}', ),
               leading: CircleAvatar(backgroundImage: NetworkImage("https://miro.medium.com/fit/c/64/64/1*WSdkXxKtD8m54-1xp75cqQ.jpeg")),
-            )
-
+            ),
           );
         },
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
     );
   }
 }
